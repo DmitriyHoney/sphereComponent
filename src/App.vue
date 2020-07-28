@@ -21,10 +21,12 @@
         >
           <b-form-checkbox
             v-for="(subctgry, j) in ctgry.children"
+            v-model="activeSubcategories"
             name="ctgry-radio"
             :key="`subctgry-${ j + 1 }`"
             :value="`ctgry${i}-item${j}-$${subctgry.sectionName}`"
-            @click="setIndeterminate(i, j)"
+            @change="setIndeterminate(i, j)"
+
           >
             {{ subctgry.sectionName }}
           </b-form-checkbox>
@@ -51,6 +53,8 @@ export default {
   name: 'App',
   data() {
     return {
+      activeSubcategories: [],
+      activeCategories: [],
       ctgries: [
         {
           sectionName: 'Культура',
@@ -96,21 +100,27 @@ export default {
             }
           ]
         },
-
       ]
     }
   },
   methods: {
    setIndeterminate(i, j) {
-      this.subctgriesActive = this.ctgries[i].children[j].sectionName;
-      this.categoryNameActive = this.ctgries[i].sectionName;
-
+      console.log(this.activeSubcategories);
     },
     onChangeCtgry(i) {
-      if (this.ctgries[i].checked)
-        this.ctgries[i].checked = false
-      else
+      if (this.ctgries[i].checked) {
+        for (let k = 0; k < this.activeCategories.length; k++) {
+          if (this.ctgries[i].sectionName === this.activeCategories[k]) {
+            this.activeCategories.splice(k, 1)
+          }
+        }
+        this.ctgries[i].checked = false;
+      }
+      else{
+        this.activeCategories.push(this.ctgries[i].sectionName)
         this.ctgries[i].checked = true
+      }
+      console.log(this.activeCategories)
     },
   },
   computed: {
@@ -138,18 +148,21 @@ export default {
     padding-right: 20px;
   }
 
+  
+
   .icon {
     color: #000;
   }
 
-  .ctgry-item__subctgry .custom-radio {
-    margin: 7px 5px 7px 15px;
-  }
+  .ctgry-item__subctgry {
+      margin: 7px 5px 7px 15px;
+    }
 
   .fade-enter-active, .fade-leave-active {
-    transition: opacity .3s;
+    transition: opacity .7s;
   }
-  .fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+  .fade-enter, .fade-leave /* .fade-leave-active до версии 2.1.8 */ {
+    transition: opacity .7s;
     opacity: 0;
   }
 </style>
